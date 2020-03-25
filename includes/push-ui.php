@@ -462,8 +462,8 @@ function menu_content() {
 
 				<div class="connections-selector">
 					<div>
-						<button class="selectall-connections unavailable"><?php esc_html_e( 'Select All', 'distributor' ); ?></button>
-						<button class="selectno-connections unavailable"><?php esc_html_e( 'None', 'distributor' ); ?></button>
+						<button class="button button-primary selectall-connections"><?php esc_html_e( 'Select All', 'distributor' ); ?></button>
+						<button class="button button-secondary selectno-connections"><?php esc_html_e( 'None', 'distributor' ); ?></button>
 						<# if ( 5 < _.keys( connections ).length ) { #>
 							<input type="text" id="dt-connection-search" placeholder="<?php esc_attr_e( 'Search available connections', 'distributor' ); ?>">
 						<# } #>
@@ -471,9 +471,8 @@ function menu_content() {
 						<div class="new-connections-list">
 							<# for ( var key in connections ) { #>
 								<# if ( 'external' === connections[ key ]['type'] ) { #>
-									<div class="add-connection<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>" data-connection-type="external" data-connection-id="{{ connections[ key ]['id'] }}">
-										<span>{{ connections[ key ]['name'] }}</span>
-									</div>
+									<input id="connection-{{ connections[ key ]['id'] }}" type="checkbox" name="connections" value="{{ connections[ key ]['id'] }}" class="<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>">
+									<label for="connection-{{ connections[ key ]['id'] }}">{{ connections[ key ]['name'] }}</label><br>
 								<# } else { #>
 									<div class="add-connection<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>" data-connection-type="internal" data-connection-id="{{ connections[ key ]['id'] }}">
 										<span>{{ connections[ key ]['url'] }}</span>
@@ -486,16 +485,7 @@ function menu_content() {
 						</div>
 					</div>
 				</div>
-				<div class="connections-selected empty">
-					<header class="with-selected">
-						<?php esc_html_e( 'Selected connections', 'distributor' ); ?>
-					</header>
-					<header class="no-selected">
-						<?php esc_html_e( 'No connections selected', 'distributor' ); ?>
-					</header>
-
-					<div class="selected-connections-list"></div>
-
+				<div class="connections-selected">
 					<div class="action-wrapper">
 						<input type="hidden" id="dt-post-status" value="<?php echo esc_attr( $post->post_status ); ?>">
 						<?php
@@ -513,7 +503,7 @@ function menu_content() {
 						 */
 						$as_draft = apply_filters( 'dt_allow_as_draft_distribute', $as_draft, $connection = null, $post );
 						?>
-						<button class="syndicate-button"><?php esc_html_e( 'Distribute', 'distributor' ); ?></button> <?php if ( $as_draft ) : ?><label class="as-draft" for="dt-as-draft"><input type="checkbox" id="dt-as-draft" checked> <?php esc_html_e( 'As draft', 'distributor' ); ?></label><?php endif; ?>
+						<button class="button button-primary syndicate-button"><?php esc_html_e( 'Distribute', 'distributor' ); ?></button> <?php if ( $as_draft ) : ?><label class="as-draft" for="dt-as-draft"><input type="checkbox" id="dt-as-draft" checked> <?php esc_html_e( 'As draft', 'distributor' ); ?></label><?php endif; ?>
 					</div>
 
 				</div>

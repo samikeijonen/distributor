@@ -30,7 +30,6 @@ jQuery( window ).on( 'load', () => {
 
 	let dtConnections           		= '';
 	let connectionsSelected     		= '';
-	let connectionsSelectedList 		= '';
 	let connectionsNewList      		= '';
 	let connectionsNewListChildren    	= '';
 	let connectionsAvailableTotal		= '';
@@ -48,7 +47,6 @@ jQuery( window ).on( 'load', () => {
 	 */
 	function setVariables() {
 		connectionsSelected     	= distributorPushWrapper.querySelector( '.connections-selected' );
-		connectionsSelectedList 	= distributorPushWrapper.querySelector( '.selected-connections-list' );
 		connectionsNewList      	= distributorPushWrapper.querySelector( '.new-connections-list' );
 		selectAllConnections 		= distributorPushWrapper.querySelector( '.selectall-connections' );
 		selectNoConnections 		= distributorPushWrapper.querySelector( '.selectno-connections' );
@@ -66,10 +64,10 @@ jQuery( window ).on( 'load', () => {
 		 */
 		jQuery( connectionsSearchInput ).on( 'keyup change', _.debounce( ( event ) => {
 			if ( '' === event.currentTarget.value ) {
-				showConnections( dtConnections );
+				//showConnections( dtConnections );
 			}
 			searchString = event.currentTarget.value.replace( /https?:\/\//i, '' ).replace( /www/i, '' ).replace( /[^0-9a-zA-Z ]+/, '' );
-			showConnections();
+			//showConnections();
 		}, 300 ) );
 
 		/**
@@ -123,7 +121,6 @@ jQuery( window ).on( 'load', () => {
 			distributorPushWrapper.classList.add( 'message-success' );
 
 			connectionsSelected.classList.add( 'empty' );
-			connectionsSelectedList.innerText = '';
 
 			setTimeout( () => {
 				distributorPushWrapper.classList.remove( 'message-success' );
@@ -307,10 +304,6 @@ jQuery( window ).on( 'load', () => {
 			const type = event.currentTarget.getAttribute( 'data-connection-type' );
 			const id   = event.currentTarget.getAttribute( 'data-connection-id' );
 
-			const deleteNode = connectionsSelectedList.querySelector( `[data-connection-id="${ id }"][data-connection-type="${ type }"]` );
-
-			deleteNode.parentNode.removeChild( deleteNode );
-
 			delete selectedConnections[type + id];
 
 			if ( selectAllConnections.classList.contains ( 'unavailable' ) ) {
@@ -321,7 +314,7 @@ jQuery( window ).on( 'load', () => {
 				classList ( 'noneUnavailable' );
 			}
 
-			showConnections();
+			//showConnections();
 		} else {
 			const type = event.currentTarget.getAttribute( 'data-connection-type' );
 			const id   = event.currentTarget.getAttribute( 'data-connection-id' );
@@ -337,8 +330,6 @@ jQuery( window ).on( 'load', () => {
 			element.appendChild( removeLink );
 			element.classList = 'added-connection';
 
-			connectionsSelectedList.appendChild( element );
-
 			if ( selectNoConnections.classList.contains ( 'unavailable' ) ) {
 				classList ( 'removeEmpty' );
 				classList ( 'none' );
@@ -347,8 +338,6 @@ jQuery( window ).on( 'load', () => {
 			if ( Object.keys( selectedConnections ).length == connectionsAvailableTotal ){
 				classList ( 'allUnavailable' );
 			}
-
-			showConnections();
 		}
 	} );
 
@@ -356,81 +345,22 @@ jQuery( window ).on( 'load', () => {
 	 * Select all connections for distribution.
 	*/
 	jQuery( distributorPushWrapper ).on( 'click', '.selectall-connections', () => {
-		jQuery ( connectionsNewList ).children( '.add-connection' ).each( ( index, childTarget ) => {
+		jQuery ( connectionsNewList ).children( 'input[type="checkbox"]' ).each( ( index, childTarget ) => {
 			if ( childTarget.classList.contains( 'syndicated' ) || childTarget.classList.contains( 'added' ) ) {
 				return;
 			} else {
-				const type = childTarget.getAttribute( 'data-connection-type' );
-				const id   = childTarget.getAttribute( 'data-connection-id' );
-
-				selectedConnections[type + id] = dtConnections[type + id];
-
-				const element     = childTarget.cloneNode();
-				element.innerText = childTarget.innerText;
-
-				const removeLink = document.createElement( 'span' );
-				removeLink.classList.add( 'remove-connection' );
-
-				element.appendChild( removeLink );
-				element.classList = 'added-connection';
-
-				connectionsSelectedList.appendChild( element );
-
-			}
-
-			if ( '' !== connectionsAvailableTotal ) {
-				classList ( 'removeEmpty' );
-				classList ( 'allUnavailable' );
-				classList ( 'none' );
+				childTarget.checked = true;
 			}
 
 		} );
-
-		showConnections();
 	} );
 
 	/**
 	 * Select no connections for distribution.
 	*/
 	jQuery( distributorPushWrapper ).on( 'click', '.selectno-connections', () => {
-
-		while ( connectionsSelectedList.firstChild ) {
-			const type = connectionsSelectedList.firstChild.getAttribute( 'data-connection-type' );
-			const id   = connectionsSelectedList.firstChild.getAttribute( 'data-connection-id' );
-
-			delete selectedConnections[type + id];
-
-			connectionsSelectedList.removeChild( connectionsSelectedList.firstChild );
-
-		}
-
-		if ( '' !== connectionsAvailableTotal ) {
-			classList ( 'addEmpty' );
-			classList ( 'noneUnavailable' );
-			classList ( 'all' );
-		}
-
-		showConnections();
-	} );
-
-	/**
-	 * Remove a connection from selected connections and the UI list
-	 */
-	jQuery( distributorPushWrapper ).on( 'click', '.remove-connection', ( event ) => {
-		event.currentTarget.parentNode.parentNode.removeChild( event.currentTarget.parentNode );
-		const type = event.currentTarget.parentNode.getAttribute( 'data-connection-type' );
-		const id   = event.currentTarget.parentNode.getAttribute( 'data-connection-id' );
-
-		delete selectedConnections[type + id];
-
-		if ( selectAllConnections.classList.contains ( 'unavailable' ) ) {
-			classList ( 'all' );
-		}
-		if ( ! Object.keys( selectedConnections ).length ) {
-			classList ( 'addEmpty' );
-			classList ( 'noneUnavailable' );
-		}
-
-		showConnections();
+		jQuery ( connectionsNewList ).children( 'input[type="checkbox"]' ).each( ( index, childTarget ) => {
+			childTarget.checked = false;
+		} );
 	} );
 } );
