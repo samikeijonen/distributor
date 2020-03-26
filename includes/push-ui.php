@@ -471,7 +471,7 @@ function menu_content() {
 						<div class="new-connections-list">
 							<# for ( var key in connections ) { #>
 								<# if ( 'external' === connections[ key ]['type'] ) { #>
-									<input id="connection-{{ connections[ key ]['id'] }}" type="checkbox" name="connections" value="{{ connections[ key ]['id'] }}" class="<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>" data-connection-type="external">
+									<input id="connection-{{ connections[ key ]['id'] }}" type="checkbox" name="connections" value="{{ connections[ key ]['id'] }}" <# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #>checked<# } #> class="add-connection <# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>" data-connection-type="external" data-connection-id="{{ connections[ key ]['id'] }}">
 									<label for="connection-{{ connections[ key ]['id'] }}">{{ connections[ key ]['name'] }}</label><br>
 								<# } else { #>
 									<div class="add-connection<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>" data-connection-type="internal" data-connection-id="{{ connections[ key ]['id'] }}">
@@ -485,7 +485,16 @@ function menu_content() {
 						</div>
 					</div>
 				</div>
-				<div class="connections-selected">
+				<div class="connections-selected empty">
+					<header class="with-selected">
+						<?php esc_html_e( 'Selected connections', 'distributor' ); ?>
+					</header>
+					<header class="no-selected">
+						<?php esc_html_e( 'No connections selected', 'distributor' ); ?>
+					</header>
+
+					<div class="selected-connections-list"></div>
+
 					<div class="action-wrapper">
 						<input type="hidden" id="dt-post-status" value="<?php echo esc_attr( $post->post_status ); ?>">
 						<?php

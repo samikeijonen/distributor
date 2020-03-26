@@ -172,16 +172,6 @@
 	margin-bottom: 1em;
 }
 
-#wpadminbar #distributor-push-wrapper .add-connection,
-#wpadminbar #distributor-push-wrapper .added-connection {
-	display: block;
-	width: 100%;
-	padding: .5em;
-	box-sizing: border-box;
-	color: inherit;
-	cursor: pointer;
-}
-
 #wpadminbar #distributor-push-wrapper .add-connection.syndicated {
 	cursor: default;
 }

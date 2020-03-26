@@ -30,6 +30,7 @@ jQuery( window ).on( 'load', () => {
 
 	let dtConnections           		= '';
 	let connectionsSelected     		= '';
+	let connectionsSelectedList         = '';
 	let connectionsNewList      		= '';
 	let connectionsNewListChildren    	= '';
 	let connectionsAvailableTotal		= '';
@@ -47,6 +48,7 @@ jQuery( window ).on( 'load', () => {
 	 */
 	function setVariables() {
 		connectionsSelected     	= distributorPushWrapper.querySelector( '.connections-selected' );
+		connectionsSelectedList 	= distributorPushWrapper.querySelector( '.selected-connections-list' );
 		connectionsNewList      	= distributorPushWrapper.querySelector( '.new-connections-list' );
 		selectAllConnections 		= distributorPushWrapper.querySelector( '.selectall-connections' );
 		selectNoConnections 		= distributorPushWrapper.querySelector( '.selectno-connections' );
@@ -64,10 +66,10 @@ jQuery( window ).on( 'load', () => {
 		 */
 		jQuery( connectionsSearchInput ).on( 'keyup change', _.debounce( ( event ) => {
 			if ( '' === event.currentTarget.value ) {
-				//showConnections( dtConnections );
+				showConnections( dtConnections );
 			}
 			searchString = event.currentTarget.value.replace( /https?:\/\//i, '' ).replace( /www/i, '' ).replace( /[^0-9a-zA-Z ]+/, '' );
-			//showConnections();
+			showConnections();
 		}, 300 ) );
 
 		/**
@@ -121,6 +123,7 @@ jQuery( window ).on( 'load', () => {
 			distributorPushWrapper.classList.add( 'message-success' );
 
 			connectionsSelected.classList.add( 'empty' );
+			connectionsSelectedList.innerText = '';
 
 			setTimeout( () => {
 				distributorPushWrapper.classList.remove( 'message-success' );
@@ -290,19 +293,17 @@ jQuery( window ).on( 'load', () => {
 	 * Add a connection to selected connections for ajax and to the UI list.
 	 */
 	jQuery( distributorPushWrapper ).on( 'click', '.add-connection', ( event ) => {
-		if ( 'A' === event.target.nodeName ) {
-			return;
-		}
-
-		event.preventDefault();
-
 		if ( event.currentTarget.classList.contains( 'syndicated' ) ) {
 			return;
 		}
-
+		console.log( 'cur: ', event.currentTarget );
 		if ( event.currentTarget.classList.contains( 'added' ) ) {
 			const type = event.currentTarget.getAttribute( 'data-connection-type' );
 			const id   = event.currentTarget.getAttribute( 'data-connection-id' );
+
+			const deleteNode = connectionsSelectedList.querySelector( `[data-connection-id="${ id }"][data-connection-type="${ type }"]` );
+
+			deleteNode.parentNode.removeChild( deleteNode );
 
 			delete selectedConnections[type + id];
 
@@ -314,21 +315,17 @@ jQuery( window ).on( 'load', () => {
 				classList ( 'noneUnavailable' );
 			}
 
-			//showConnections();
+			showConnections();
 		} else {
 			const type = event.currentTarget.getAttribute( 'data-connection-type' );
 			const id   = event.currentTarget.getAttribute( 'data-connection-id' );
 
 			selectedConnections[type + id] = dtConnections[type + id];
 
-			const element       = event.currentTarget.cloneNode();
-			element.innerText = event.currentTarget.innerText;
-
-			const removeLink = document.createElement( 'span' );
-			removeLink.classList.add( 'remove-connection' );
-
-			element.appendChild( removeLink );
+			const element = event.currentTarget.cloneNode();
 			element.classList = 'added-connection';
+
+			connectionsSelectedList.appendChild( element );
 
 			if ( selectNoConnections.classList.contains ( 'unavailable' ) ) {
 				classList ( 'removeEmpty' );
@@ -338,6 +335,7 @@ jQuery( window ).on( 'load', () => {
 			if ( Object.keys( selectedConnections ).length == connectionsAvailableTotal ){
 				classList ( 'allUnavailable' );
 			}
+			console.log( 'sync: ', selectedConnections );
 		}
 	} );
 
@@ -350,15 +348,47 @@ jQuery( window ).on( 'load', () => {
 				return;
 			} else {
 				childTarget.checked = true;
+
+				const type = childTarget.getAttribute( 'data-connection-type' );
+				const id   = childTarget.getAttribute( 'data-connection-id' );
+
+				selectedConnections[type + id] = dtConnections[type + id];
+
+				const element  = childTarget.cloneNode();
+
+				element.classList = 'added-connection';
+
+				connectionsSelectedList.appendChild( element );
 			}
 
 		} );
+
+		showConnections();
 	} );
 
 	/**
 	 * Select no connections for distribution.
 	*/
 	jQuery( distributorPushWrapper ).on( 'click', '.selectno-connections', () => {
+
+		while ( connectionsSelectedList.firstChild ) {
+			const type = connectionsSelectedList.firstChild.getAttribute( 'data-connection-type' );
+			const id   = connectionsSelectedList.firstChild.getAttribute( 'data-connection-id' );
+
+			delete selectedConnections[type + id];
+
+			connectionsSelectedList.removeChild( connectionsSelectedList.firstChild );
+
+		}
+
+		if ( '' !== connectionsAvailableTotal ) {
+			classList ( 'addEmpty' );
+			classList ( 'noneUnavailable' );
+			classList ( 'all' );
+		}
+
+		showConnections();
+
 		jQuery ( connectionsNewList ).children( 'input[type="checkbox"]' ).each( ( index, childTarget ) => {
 			childTarget.checked = false;
 		} );
