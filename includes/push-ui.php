@@ -471,7 +471,7 @@ function menu_content() {
 						<div class="new-connections-list">
 							<# for ( var key in connections ) { #>
 								<# if ( 'external' === connections[ key ]['type'] ) { #>
-									<input id="connection-{{ connections[ key ]['id'] }}" type="checkbox" name="connections" value="{{ connections[ key ]['id'] }}" class="<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>">
+									<input id="connection-{{ connections[ key ]['id'] }}" type="checkbox" name="connections" value="{{ connections[ key ]['id'] }}" class="<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>" data-connection-type="external">
 									<label for="connection-{{ connections[ key ]['id'] }}">{{ connections[ key ]['name'] }}</label><br>
 								<# } else { #>
 									<div class="add-connection<# if ( ! _.isEmpty( connections[ key ]['syndicated'] ) ) { #> syndicated<# } #>" data-connection-type="internal" data-connection-id="{{ connections[ key ]['id'] }}">
